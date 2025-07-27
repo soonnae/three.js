@@ -40,9 +40,12 @@
 		if ( window.location.protocol !== 'file:' ) {
 
 			const re = /^(.*?\/manual\/)(.*?)$/;
-			const [ , baseURL, articlePath ] = re.exec( window.location.href );
-			const href = `${baseURL}#${articlePath.replace( '.html', '' )}`;
-			window.location.replace( href ); // lgtm[js/client-side-unvalidated-url-redirection]
+			const match = re.exec( window.location.href );
+			if (match) {
+				const [ , baseURL, articlePath ] = match;
+				const href = `${baseURL}#${articlePath.replace( '.html', '' )}`;
+				window.location.replace( href ); // lgtm[js/client-side-unvalidated-url-redirection]
+			}
 
 		}
 

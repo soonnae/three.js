@@ -32,6 +32,15 @@ if ( process.argv.length !== 3 ) {
 
 const fileName = process.argv[ 2 ];
 
+// Validate and sanitize the input file path
+const safeBasePath = path.resolve(ldrawPath, 'models');
+const resolvedFilePath = path.resolve(safeBasePath, fileName);
+
+if (!resolvedFilePath.startsWith(safeBasePath)) {
+	console.log('Error: Invalid file path.');
+	process.exit(1);
+}
+
 const materialsFilePath = path.join( ldrawPath, materialsFileName );
 
 console.log( 'Loading materials file "' + materialsFilePath + '"...' );
@@ -79,7 +88,7 @@ for ( let i = objectsPaths.length - 1; i >= 0; i -- ) {
 packedContent += '\n';
 
 // Save output file
-const outPath = fileName + '_Packed.mpd';
+const outPath = resolvedFilePath + '_Packed.mpd';
 console.log( 'Writing "' + outPath + '"...' );
 fs.writeFileSync( outPath, packedContent );
 

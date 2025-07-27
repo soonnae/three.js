@@ -12,7 +12,10 @@ if ( ! window.frameElement && window.location.protocol !== 'file:' ) {
 	// docs home, e.g. https://mrdoob.github.io/three.js/docs/
 	url.pathname = url.pathname.replace( /(\/docs\/).*$/, '$1' );
 
-	window.location.replace( url );
+	// Validate and sanitize URL before redirection
+	if (url.origin === window.location.origin) {
+		window.location.replace( url );
+	}
 
 } else {
 
@@ -20,6 +23,11 @@ if ( ! window.frameElement && window.location.protocol !== 'file:' ) {
 
 }
 
+function sanitizeHTML(str) {
+	const temp = document.createElement('div');
+	temp.textContent = str;
+	return temp.innerHTML;
+}
 
 function onDocumentLoad() {
 
@@ -53,15 +61,15 @@ function onDocumentLoad() {
 
 	let text = document.body.innerHTML;
 
-	text = text.replace( /\[name\]/gi, name );
-	text = text.replace( /\[path\]/gi, path );
+	text = text.replace( /\[name\]/gi, sanitizeHTML(name) );
+	text = text.replace( /\[path\]/gi, sanitizeHTML(path) );
 	text = text.replace( /\[page:([\w\.]+)\]/gi, '[page:$1 $1]' ); // [page:name] to [page:name title]
-	text = text.replace( /\[page:\.([\w\.]+) ([\w\.\s]+)\]/gi, `[page:${name}.$1 $2]` ); // [page:.member title] to [page:name.member title]
+	text = text.replace( /\[page:\.([\w\.]+) ([\w\.\s]+)\]/gi, `[page:${sanitizeHTML(name)}.$1 $2]` ); // [page:.member title] to [page:name.member title]
 	text = text.replace( /\[page:([\w\.]+) ([\w\.\s]+)\]/gi, '<a class=\'links\' data-fragment=\'$1\' title=\'$1\'>$2</a>' ); // [page:name title]
 	// text = text.replace( /\[member:.([\w]+) ([\w\.\s]+)\]/gi, "<a onclick=\"window.parent.setUrlFragment('" + name + ".$1')\" title=\"$1\">$2</a>" );
 
 	text = text.replace( /\[(member|property|method|param):([\w]+)\]/gi, '[$1:$2 $2]' ); // [member:name] to [member:name title]
-	text = text.replace( /\[(?:member|property|method):([\w]+) ([\w\.\s]+)\]\s*(\([\s\S]*?\))?/gi, `<a class='permalink links' data-fragment='${name}.$2' target='_parent' title='${name}.$2'>#</a> .<a class='links' data-fragment='${name}.$2' id='$2'>$2</a> $3 : <a class='param links' data-fragment='$1'>$1</a>` );
+	text = text.replace( /\[(?:member|property|method):([\w]+) ([\w\.\s]+)\]\s*(\([\s\S]*?\))?/gi, `<a class='permalink links' data-fragment='${sanitizeHTML(name)}.$2' target='_parent' title='${sanitizeHTML(name)}.$2'>#</a> .<a class='links' data-fragment='${sanitizeHTML(name)}.$2' id='$2'>$2</a> $3 : <a class='param links' data-fragment='$1'>$1</a>` );
 	text = text.replace( /\[param:([\w\.]+) ([\w\.\s]+)\]/gi, '$2 : <a class=\'param links\' data-fragment=\'$1\'>$1</a>' ); // [param:name title]
 
 	text = text.replace( /\[link:([\w\:\/\.\-\_\(\)\?\#\=\!\~]+)\]/gi, '<a href="$1" target="_blank">$1</a>' ); // [link:url]

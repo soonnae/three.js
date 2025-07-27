@@ -6,7 +6,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 require( './ogc-parser' );
 
-const baseDir = process.argv[ 2 ];
+const baseDir = path.resolve(process.argv[ 2 ]);
 
 function readJSON( name ) {
 

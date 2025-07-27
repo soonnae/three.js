@@ -220,6 +220,7 @@ let browser;
 /* Launch server */
 
 const app = express();
+app.disable('x-powered-by');
 app.use( express.static( path.resolve() ) );
 const server = app.listen( port, main );
 

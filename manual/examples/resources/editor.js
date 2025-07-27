@@ -28,7 +28,9 @@
 		s.split( '&' ).forEach( function ( pair ) {
 
 			const parts = pair.split( '=' ).map( decodeURIComponent );
-			query[ parts[ 0 ] ] = parts[ 1 ];
+			if (parts[0] && parts[1]) { // Ensure both key and value are present
+				query[ parts[ 0 ] ] = parts[ 1 ];
+			}
 
 		} );
 		return query;
@@ -183,7 +185,6 @@
 			fn( info, ndx, name );
 
 		} );
-
 	}
 
 	function getHTMLPart( re, obj, tag ) {

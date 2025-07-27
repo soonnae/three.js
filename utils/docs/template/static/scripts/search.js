@@ -50,6 +50,13 @@ async function fetchAllData() {
 
 }
 
+function sanitizeHTML(str) {
+    return str.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;");
+}
 
 function buildSearchResult( result ) {
 
@@ -61,11 +68,11 @@ function buildSearchResult( result ) {
 		const { title = '', description = '' } = res.item;
 
 		const _link = res.item.link.replace( '<a href="', '' ).replace( /">.*/, '' );
-		const _title = title.replace( removeHTMLTagsRegExp, '' );
-		const _description = description.replace( removeHTMLTagsRegExp, '' );
+		const _title = sanitizeHTML(title.replace( removeHTMLTagsRegExp, '' ));
+		const _description = sanitizeHTML(description.replace( removeHTMLTagsRegExp, '' ));
 
 		output += `
-    <a href="${_link}" class="search-result-item" onclick="hideSearch()">
+    <a href="${sanitizeHTML(_link)}" class="search-result-item" onclick="hideSearch()">
       <span class="search-result-item-title">${_title}</span>
       <span class="search-result-item-description">- ${_description || 'No description available.'}</span>
     </a>
